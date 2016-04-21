@@ -88,7 +88,7 @@ public class PlaceModel {
 	public static PlaceModel SavePlace(int userid, int placeid ) {
 		try {
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = "insert into saveplaces (userid,placeid) VALUES  (?,?);";
+			String sql = "insert into saveplaces ('userid','placeid') VALUES  (?,?);";
 			// System.out.println(sql);
 
 			PreparedStatement stmt=null;
@@ -99,12 +99,12 @@ public class PlaceModel {
 			ResultSet rs = stmt.getGeneratedKeys();
 			if (rs.next()) {
 				PlaceModel place = new PlaceModel();
-				place.id = placeid;
-				place.userid=userid;
-//				place.Description="notfound";
-//				place.lat=0.0;
-//				place.lng=0.0;
-//				place.name="notfound";
+				place.id = rs.getInt(2);
+				place.userid=rs.getInt(1);
+				place.Description="notfound";
+				place.lat=0.0;
+				place.lng=0.0;
+				place.name="notfound";
 				return place;
 			}
 			return null;
@@ -134,5 +134,48 @@ public class PlaceModel {
 		}
 		return places;
 	}
+	
+	public static ArrayList<String> ShowsavePlaces(int userid){
+		ArrayList<String> saveplaces = new ArrayList<>();
+		ArrayList<Integer> saveplacesid = new ArrayList<>();
+		try{
+			Connection conn = DBConnection.getActiveConnection();
+			String sql ="select placeid from saveplaces where userid =?;" ;
+			PreparedStatement stmt=null;
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, userid);
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next()){
+					
+				int r=rs.getInt(1);
+				saveplacesid.add(r);
+				}
+					try{
+						Connection  conn1 = DBConnection.getActiveConnection();
+						for(int i=0;i<saveplacesid.size();i++)
+						{
+							int pid =saveplacesid.get(i);
+						String sql1 ="select * from places where id =?;" ;
+						PreparedStatement stmt1=null;
+						stmt1 = conn1.prepareStatement(sql1);
+						stmt1.setInt(1, pid);
+						
+						ResultSet rs1 = stmt1.executeQuery();
+						while(rs1.next()){
+							
+							String s=rs1.getString(2)+"   -      "+rs1.getString(3)+"  -  "+rs1.getInt(4)+" -"+rs1.getInt(5);
 
+						saveplaces.add(s);
+						}
+						}
+						
+				}catch(SQLException e){
+					e.printStackTrace();
+				}
+				
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return saveplaces;
+	}
 }
