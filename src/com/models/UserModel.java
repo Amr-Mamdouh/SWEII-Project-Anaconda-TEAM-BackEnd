@@ -97,8 +97,6 @@ public class UserModel {
 		return null;
 	}
 
-	
-	
 	public static UserModel login(String email, String pass) {
 		try {
 			Connection conn = DBConnection.getActiveConnection();
@@ -174,7 +172,6 @@ public class UserModel {
 		return false;
 	}
 	
-
     public static UserModel GetLocation(String email, String pass)
     {
         try {

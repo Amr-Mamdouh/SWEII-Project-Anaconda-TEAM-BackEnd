@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.print.attribute.standard.Sides;
 import javax.ws.rs.FormParam;
 
 import com.mysql.jdbc.Statement;
@@ -16,6 +17,17 @@ public class PlaceModel {
 	String Description;
 	double lat,lng;
 	int id=0;
+	static int sid=1;
+	
+	public PlaceModel() {
+		super();
+		this.name = "";
+		Description = "";
+		this.lat = 0.0;
+		this.lng = 0.0;
+		this.id = 0;
+		this.userid = 0;
+	}
 	int userid=0;
 
 	public String getName() {
@@ -86,28 +98,32 @@ public class PlaceModel {
 	}
 
 	public static PlaceModel SavePlace(int userid, int placeid ) {
+		
 		try {
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = "insert into saveplaces ('userid','placeid') VALUES  (?,?);";
-			// System.out.println(sql);
-
+			String sql = "insert into saveplaces (userid,placeid,sid) VALUES  (?,?,?);";
+			 System.out.println(sql);
+			 PlaceModel place = new PlaceModel();
 			PreparedStatement stmt=null;
 			stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			stmt.setInt(1, userid);
 			stmt.setInt(2, placeid);
+			stmt.setInt(3,sid);
+			sid++;
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
+			System.out.println("saveplace");
 			if (rs.next()) {
-				PlaceModel place = new PlaceModel();
+				
 				place.id = rs.getInt(2);
-				place.userid=rs.getInt(1);
+				place.userid=rs.getInt(3);
 				place.Description="notfound";
 				place.lat=0.0;
 				place.lng=0.0;
 				place.name="notfound";
-				return place;
+				
 			}
-			return null;
+			return place;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,7 +150,6 @@ public class PlaceModel {
 		}
 		return places;
 	}
-	
 	public static ArrayList<String> ShowsavePlaces(int userid){
 		ArrayList<String> saveplaces = new ArrayList<>();
 		ArrayList<Integer> saveplacesid = new ArrayList<>();
@@ -178,4 +193,5 @@ public class PlaceModel {
 		}
 		return saveplaces;
 	}
+
 }

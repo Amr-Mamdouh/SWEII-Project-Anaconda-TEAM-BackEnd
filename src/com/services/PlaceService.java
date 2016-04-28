@@ -35,7 +35,7 @@ public class PlaceService {
 			@FormParam("placeid") int  placeid) {
 		PlaceModel place = PlaceModel.SavePlace(userid, placeid);
 		if(place==null)
-			return "Can't save This Place";
+		{return "Can't save This Place";}
 		JSONObject json = new JSONObject();
 		json.put("placeid", place.getId());
 		json.put("userid",place.getUserid());

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.28, for debian-linux-gnu (x86_64)
 --
--- Host: 127.0.0.1    Database: se2project
+-- Host: localhost    Database: se2firstapp
 -- ------------------------------------------------------
--- Server version	5.7.10-log
+-- Server version	5.6.28-0ubuntu0.15.10.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,61 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `checkIn`
+--
+
+DROP TABLE IF EXISTS `checkIn`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `checkIn` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `place_id` int(11) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `like_num` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `checkIn`
+--
+
+LOCK TABLES `checkIn` WRITE;
+/*!40000 ALTER TABLE `checkIn` DISABLE KEYS */;
+INSERT INTO `checkIn` VALUES (1,5,1,'welcome new study year',0),(2,8,1,'back to school',0),(3,0,0,NULL,0),(4,18,3,'khalifa',0),(5,1,3,'wwww',0),(6,1,4,'wwww',0),(7,18,4,'wwww',0),(8,18,5,'wwww',0);
+/*!40000 ALTER TABLE `checkIn` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `comment_checkIn`
+--
+
+DROP TABLE IF EXISTS `comment_checkIn`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comment_checkIn` (
+  `user_id` int(11) NOT NULL,
+  `checkIn_id` int(11) NOT NULL,
+  `comment` varchar(1000) NOT NULL,
+  KEY `user_id` (`user_id`),
+  KEY `checkIn_id` (`checkIn_id`),
+  CONSTRAINT `comment_checkIn_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `comment_checkIn_ibfk_2` FOREIGN KEY (`checkIn_id`) REFERENCES `checkIn` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `comment_checkIn`
+--
+
+LOCK TABLES `comment_checkIn` WRITE;
+/*!40000 ALTER TABLE `comment_checkIn` DISABLE KEYS */;
+INSERT INTO `comment_checkIn` VALUES (18,3,'Mohamed Ramadan Says Hay.'),(19,2,'first comment from post man'),(19,5,'second comment from post man');
+/*!40000 ALTER TABLE `comment_checkIn` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `follow`
@@ -37,6 +92,33 @@ LOCK TABLES `follow` WRITE;
 /*!40000 ALTER TABLE `follow` DISABLE KEYS */;
 INSERT INTO `follow` VALUES ('m.samir','mhmdsamir92@gmail.com'),('mhmdsamir1@gmail.com','mhmdsamir92@gmail.com'),('mhmdsamir1@gmail.com','youtube'),('mhmdsamir91@gmail.com','youtube'),('mhmdsamir@gmail.com','youtube'),('youtube',''),('youtube','m.samir'),('youtube','mhmdsamir92@gmail.com'),('youtube','Ramadan');
 /*!40000 ALTER TABLE `follow` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `like_checkIn`
+--
+
+DROP TABLE IF EXISTS `like_checkIn`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `like_checkIn` (
+  `user_id` int(11) NOT NULL,
+  `checkIn_id` int(11) NOT NULL,
+  KEY `user_id` (`user_id`),
+  KEY `checkIn_id` (`checkIn_id`),
+  CONSTRAINT `like_checkIn_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `like_checkIn_ibfk_2` FOREIGN KEY (`checkIn_id`) REFERENCES `checkIn` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `like_checkIn`
+--
+
+LOCK TABLES `like_checkIn` WRITE;
+/*!40000 ALTER TABLE `like_checkIn` DISABLE KEYS */;
+INSERT INTO `like_checkIn` VALUES (19,5),(2,5);
+/*!40000 ALTER TABLE `like_checkIn` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -131,4 +213,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-20 18:08:59
+-- Dump completed on 2016-04-20 22:25:57
