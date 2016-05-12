@@ -45,18 +45,17 @@ public class Action {
 		this.describtion = describtion;
 	}
 
-	public static Action addNewAction(int userid ,String describtion,int actionid) {
+	public static Action addNewAction(int userid ,int actionid,String describtion) {
 		try {
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = "insert into actions (Aid,actionid,userid,description) VALUES (?,?,?,?)";
+			String sql = "insert into actions(userid,actionid,description) value (?,?,?)";
 			// System.out.println(sql)
 
 			PreparedStatement stmt=null;
 			stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			stmt.setInt(1, id);
-			stmt.setInt(3, userid);
-			stmt.setString(4,  describtion);
+			stmt.setInt(1, userid);
 			stmt.setInt(2, actionid);
+			stmt.setString(3, describtion);
 			stmt.executeUpdate();
 			id++;
 			ResultSet rs = stmt.getGeneratedKeys();
@@ -79,11 +78,11 @@ public class Action {
 	public static boolean undoAction(int actionid,int userid){
 		try{
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = "delete from actions where Aid=1 and userid=2;" ;
+			String sql = "delete  from actions where userid=? and aid=?;" ;
 			PreparedStatement stmt;
 				stmt = conn.prepareStatement(sql);
-				stmt.setInt(1, actionid);
-				stmt.setInt(2, userid);
+				stmt.setInt(1, userid);
+				stmt.setInt(2, actionid);
 				stmt.executeUpdate();
 				return true;
 		}catch(SQLException e){
@@ -95,17 +94,18 @@ public class Action {
 		ArrayList<String> act = new ArrayList<>();
 		try{
 			Connection conn = DBConnection.getActiveConnection();
-			String sql ="select * from actions where userid=?;;" ;
+			String sql ="select * from actions where userid=?;" ;
 			PreparedStatement stmt=null;
 				stmt = conn.prepareStatement(sql);
 				stmt.setInt(1, userid);
 				ResultSet rs = stmt.executeQuery();
 				while(rs.next()){
-					String s="ID-{"+rs.getInt(1)+"   }-Action id   -  { "+rs.getInt(2)+" } -user id -{ "+rs.getInt(3)+" }- Action ->{ "+rs.getString(4)+"}";
-
+					String s="ID-{"+rs.getInt(1)+"   }-Action id   -  { "+rs.getInt(3)+" } -user id -{ "+rs.getInt(2)+" }- Action ->{ "+rs.getString(4)+"}";
+					System.out.println(s);
 			act.add(s);
 
 				}
+				return act;
 									
 		}catch(SQLException e){
 			e.printStackTrace();

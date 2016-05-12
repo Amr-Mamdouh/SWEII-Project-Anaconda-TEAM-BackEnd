@@ -17,9 +17,9 @@ public class PlaceService {
 	@POST
 	@Path("/addnewplace")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String signUp(@FormParam("name") String name,
+	public String signUp( @FormParam("userid") int userid,@FormParam("name") String name,
 			@FormParam("decription") String decription, @FormParam("lat") double lat,@FormParam("lng") double lng) {
-		PlaceModel place = PlaceModel.addNewPlace(name, decription, lat, lng);
+		PlaceModel place = PlaceModel.addNewPlace(userid,name, decription, lat, lng);
 		JSONObject json = new JSONObject();
 		json.put("id", place.getId());
 		json.put("name", place.getName());

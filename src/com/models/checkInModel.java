@@ -10,6 +10,8 @@ import javax.naming.spi.DirStateFactory.Result;
 
 import com.mysql.jdbc.Statement;
 
+import jersey.repackaged.com.google.common.base.Objects.ToStringHelper;
+
 public class checkInModel {
 	private int userId , placeId , id ,  like_num ;
 	private String discription ;
@@ -62,6 +64,8 @@ public class checkInModel {
 				checkIn.placeId = placeId;
 				checkIn.discription = discription;
 				checkIn.like_num = 0;
+				String s="3Make checkin"+checkIn.id;
+				Action.addNewAction(checkIn.userId,checkIn.id,s);
 				return checkIn;
 			}
 		} catch (SQLException e) {
@@ -72,49 +76,54 @@ public class checkInModel {
 				
 	}
 	public static void like(int user_id , int checkIn_id ) throws SQLException{
-		Connection conn = DBConnection.getActiveConnection();
-/*		String sql = "select * from checkIn where id = ?;";
+	
 		try {
-			PreparedStatement stmt = conn.prepareStatement(sql , Statement.RETURN_GENERATED_KEYS);
-			stmt.setInt(1, checkIn_id);
-			stmt.executeQuery();
-			ResultSet rs = stmt.getGeneratedKeys();
-			System.out.println("checkIn");
-			if(rs.next()){
-				sql = "select * from users where id = ?;";
-				stmt = conn.prepareStatement(sql , Statement.RETURN_GENERATED_KEYS);
-				stmt.setInt(1, user_id);
-				stmt.executeQuery();
-				rs = stmt.getGeneratedKeys();
-				System.out.println("checkIn table done!");
-				if(rs.next()){
-					System.out.println("users table done!");
-*/
-					String sql = "insert into like_checkIn (user_id , checkIn_id) values (?,?);";
-					PreparedStatement stmt = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
-					stmt.setInt(1, user_id);
-					stmt.setInt(2, checkIn_id);
-					stmt.executeUpdate();
+			Connection conn = DBConnection.getActiveConnection();
+			String sql = "insert into like_checkIn (userid , checkinid) values (?,?);";
+			PreparedStatement stmt = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
+			stmt.setInt(1, user_id);
+			stmt.setInt(2, checkIn_id);
+			stmt.executeUpdate();
+			ResultSet rs=stmt.getGeneratedKeys();
+			if(rs.next())
+			{int id=rs.getInt(1);
+				String s="4Make like  to checkin num "+checkIn_id;
+				Action.addNewAction(user_id, id,s);
+				s="Check in num "+checkIn_id+" Has Like";
+				Notifications.addNewNotifications(user_id, checkIn_id, s);
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+					
 	}
 				
-	public static void comment(int user_id , int checkIn_id , String comment) throws SQLException{
-		Connection conn = DBConnection.getActiveConnection();
-		String sql = "insert into  comment_checkIn(user_id , checkIn_id , `comment`) values (?,?,?);";
-		PreparedStatement stmt = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
-		stmt.setInt(1, user_id);
-		stmt.setInt(2, checkIn_id);
-		stmt.setString(3, comment);
-		stmt.executeUpdate();
+	public static void comment(int userId ,int checkid, String comment){
+		
+		try {
+			Connection conn = DBConnection.getActiveConnection();
+			String sql = "insert into comment_checkin (userid,checkinid,comment) value(?,?,?);";
+			PreparedStatement stmt = conn.prepareStatement(sql , Statement.RETURN_GENERATED_KEYS);
+			stmt.setInt(1, userId);
+			stmt.setInt(2, checkid);
+			stmt.setString(3,comment);
+			//stmt.setInt(4, 0);
+			stmt.executeUpdate();
+			ResultSet rs = stmt.getGeneratedKeys();
+			if(rs.next()){
+				int id=rs.getInt(1); 
+				String s="5Make Comment to checkin "+checkid;
+				Action.addNewAction(userId,id,s);
+				s="Check in num  " +checkid+  " has Comment";
+				Notifications.addNewNotifications(userId, checkid, s);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
 	}
-	
-//	public static ResultSet places() throws SQLException{
-//		Connection conn = DBConnection.getActiveConnection();
-//		String sql = "select * from places;";
-//		PreparedStatement stmt = conn.prepareStatement(sql ,Statement.RETURN_GENERATED_KEYS);
-//		ResultSet rs = stmt.executeQuery(); //stmt.getGeneratedKeys();
-//		return rs;
-//	}
-	
 	public static ArrayList<checkInModel> checkIns(int user_id) throws SQLException, CloneNotSupportedException{
 		ArrayList<checkInModel> checkIns = new ArrayList<>();
 		checkInModel checkIn = new checkInModel();

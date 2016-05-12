@@ -18,6 +18,7 @@ public class PlaceModel {
 	double lat,lng;
 	int id=0;
 	static int sid=1;
+	static Action A;
 	
 	public PlaceModel() {
 		super();
@@ -66,12 +67,11 @@ public class PlaceModel {
 	public void setLng(double lng) {
 		this.lng = lng;
 	}
-	public static PlaceModel addNewPlace(String name, String description, double lat,double lng) {
+	public static PlaceModel addNewPlace(int userid,String name, String description, double lat,double lng) {
 		try {
 			Connection conn = DBConnection.getActiveConnection();
 			String sql = "insert into places (name,description,lat,`long`) VALUES  (?,?,?,?);";
-			// System.out.println(sql);
-
+			// System.out.println(sql);	
 			PreparedStatement stmt=null;
 			stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, name);
@@ -87,9 +87,12 @@ public class PlaceModel {
 				place.Description = description;
 				place.lat = lat;
 				place.lng = lng;
+				String s="1 Add new place"+place.id;
+				Action.addNewAction(userid, place.id,s);	
 				return place;
+				
 			}
-			return null;
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -101,29 +104,29 @@ public class PlaceModel {
 		
 		try {
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = "insert into saveplaces (userid,placeid,sid) VALUES  (?,?,?);";
+			String sql = "insert into saveplaces (userid,placeid) value(?,?);";
 			 System.out.println(sql);
 			 PlaceModel place = new PlaceModel();
 			PreparedStatement stmt=null;
 			stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			stmt.setInt(1, userid);
-			stmt.setInt(2, placeid);
-			stmt.setInt(3,sid);
-			sid++;
+			stmt.setInt(1,userid);
+			stmt.setInt(2,placeid);
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
-			System.out.println("saveplace");
 			if (rs.next()) {
 				
-				place.id = rs.getInt(2);
-				place.userid=rs.getInt(3);
+				place.sid = rs.getInt(1);
+				System.out.println("saveplace");
+				place.userid=userid;
 				place.Description="notfound";
 				place.lat=0.0;
 				place.lng=0.0;
 				place.name="notfound";
-				
+				String s="2Save Place "+place.sid;
+				Action.addNewAction(userid, place.sid,s);
+				return place;
 			}
-			return place;
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -193,5 +196,40 @@ public class PlaceModel {
 		}
 		return saveplaces;
 	}
-
+	public static boolean deleteplace(int pid){
+		try{
+			Connection conn = DBConnection.getActiveConnection();
+			String sql = "delete from places where id=?;" ;
+			PreparedStatement stmt;
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, pid);
+				stmt.executeUpdate();
+				ResultSet rs = stmt.executeQuery();
+				if(rs.next())
+				{
+				return true;
+				}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+	public static boolean deletsaveeplace(int sid){
+		try{
+			Connection conn = DBConnection.getActiveConnection();
+			String sql = "delete from saveplaces where id=?;" ;
+			PreparedStatement stmt;
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, sid);
+				stmt.executeUpdate();
+				ResultSet rs = stmt.executeQuery();
+				if(rs.next())
+				{
+				return true;
+				}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
