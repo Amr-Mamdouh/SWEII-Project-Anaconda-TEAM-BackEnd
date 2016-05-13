@@ -153,6 +153,29 @@ public class PlaceModel {
 		}
 		return places;
 	}
+	private static String getplace(int pid)
+	{String s="";
+		try{
+			Connection  conn1 = DBConnection.getActiveConnection();
+			String sql1 ="select * from places where id =?;" ;
+			PreparedStatement stmt1=null;
+			stmt1 = conn1.prepareStatement(sql1);
+			stmt1.setInt(1, pid);
+			
+			ResultSet rs1 = stmt1.executeQuery();
+			while(rs1.next()){
+				
+				 s=rs1.getString(2)+"   -      "+rs1.getString(3)+"  -  "+rs1.getInt(4)+" -"+rs1.getInt(5);
+
+			return s;
+			}
+			
+			
+	}catch(SQLException e){
+		e.printStackTrace();
+	}
+	return s;
+	}
 	public static ArrayList<String> ShowsavePlaces(int userid){
 		ArrayList<String> saveplaces = new ArrayList<>();
 		ArrayList<Integer> saveplacesid = new ArrayList<>();
@@ -168,29 +191,12 @@ public class PlaceModel {
 				int r=rs.getInt(1);
 				saveplacesid.add(r);
 				}
-					try{
-						Connection  conn1 = DBConnection.getActiveConnection();
-						for(int i=0;i<saveplacesid.size();i++)
-						{
-							int pid =saveplacesid.get(i);
-						String sql1 ="select * from places where id =?;" ;
-						PreparedStatement stmt1=null;
-						stmt1 = conn1.prepareStatement(sql1);
-						stmt1.setInt(1, pid);
-						
-						ResultSet rs1 = stmt1.executeQuery();
-						while(rs1.next()){
-							
-							String s=rs1.getString(2)+"   -      "+rs1.getString(3)+"  -  "+rs1.getInt(4)+" -"+rs1.getInt(5);
-
-						saveplaces.add(s);
-						}
-						}
-						
-				}catch(SQLException e){
-					e.printStackTrace();
+				for(int i=0;i<saveplacesid.size();i++)
+				{
+					String s=getplace(saveplacesid.get(i));
+					saveplaces.add(s);
 				}
-				
+									
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
